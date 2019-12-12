@@ -1,0 +1,1016 @@
+* Git
+** Source Control Management (SCM)
+
+Software zur Versionsverwaltung von Dateien auf dem Computer.
+
+git, SVN, CVS, Team Foundation und andere.
+
+Git wird als verteiltes Versionskontrollsystem oder DVCS
+bezeichnet. Nicht-DVCS-SCM-Tools erfordern normalerweise eine Client /
+Server-Architektur, bei der ein zentraler Server das Haupt-Repository
+hostet und Entwickler mit Clients arbeiten, die Code an das
+Haupt-Repository übergeben. Ein wichtiges Merkmal von DVCS ist, dass
+es kein zentrales Hauptrepository gibt und alle Entwickler an einem
+Projekt mit lokalen Repositorys arbeiten und Commits direkt
+miteinander austauschen.
+
+In der Praxis werden jedoch die meisten Entwicklerteams, die git
+verwenden, Commits nicht direkt aufeinander übertragen. Stattdessen
+verlassen sie sich auf ein zentrales Repository, das als
+Hauptrepository fungiert. Dieses Hauptrepository wird normalerweise
+auf Github.com gehostet.
+
+Aber auch Bitbucket ist sehr beliebt. Opitz verwendet z.B. Bitbucket
+intern.
+
+** Checking for git
+
+#+begin_src bash
+type git
+#+end_src
+
+#+begin_example
+# git is /usr/local/bin/git
+#+end_example
+
+#+begin_src bash
+git --version
+#+end_src
+
+#+begin_example
+# git version 2.24.0
+#+end_example
+
+** Creating Local Repositories 
+*** Create an example project 
+
+#+begin_src bash
+mkdir -p ~/opitz/bash-functions
+#+end_src
+
+#+begin_src bash
+cd ~/opitz/bash-functions
+#+end_src
+
+#+begin_src bash
+echo '# README #' > README.md
+#+end_src
+
+#+begin_src bash
+echo '# LICENSE #' > LICENSE.md
+#+end_src
+
+#+begin_src bash
+cat > .bash_functions <<-"_EOF"
+vzcopydirtree ()
+{
+ cd ${1}; tar -cf - . | (cd ${2}; tar -xf -)
+}
+_EOF
+#+end_src
+
+#+begin_src bash
+ls -lisat
+#+end_src
+
+*** Initialize a Git repository in the project directory
+
+#+begin_src bash
+git init
+#+end_src
+
+#+begin_example
+# Initialized empty Git repository in /home/oracle/opitz/bash-functions/.git/
+#+end_example
+
+Technisch gesehen wird ein .git Directory innerhalb des Projekt Directories angelegt.
+
+Konzeptuell haben wir das Projekt Directory in ein Git Repository umgewandelt.
+
+Das .git Verzeichnis enthält alle Konfigurations- und Metadaten, die
+git benötigt, um unsere Dateien und die Änderungen, die wir an ihnen
+vornehmen, im Auge zu behalten.
+
+*** Configuration files
+
+| Location                 | Description                                                                                  |
+|--------------------------+----------------------------------------------------------------------------------------------|
+| /etc/gitconfig           | Contains settings that are system-wide and apply to all users and all of their repositories. |
+| ~/.gitconfig             | Configuration that is specific to your user account. This file overrides /etc/gitconfig.     |
+| <repository>/.git/config | Configuration that is specific to a repository. This file overrides both of the other files. |
+
+*** Configure our identity
+
+Commits in Git werden mit dem Usernamen un der e-Mail Adresse des Ausführenden getagt.
+
+#+begin_src bash
+git config --global user.name "Dr. Volker Zell"
+#+end_src
+
+#+begin_src bash
+git config --global user.email volker.zell@opitz-consulting.com
+#+end_src
+
+#+begin_src bash
+cat ~/.gitconfig
+#+end_src
+
+#+begin_example
+# [user]
+# 	name = Dr. Volker Zell
+#+end_example
+
+*** .gitignore
+
+Die meisten Git-Repositorys enthalten private Daten, die nicht
+freigegeben werden sollen, z. B. lokale Datenbanken, Protokolldateien
+oder persönliche Anmeldeinformationen.
+
+#+begin_src bash
+mkdir db
+#+end_src
+
+#+begin_src bash
+touch db/private.sqlite3
+#+end_src
+
+#+begin_src bash
+cat > .gitignore <<-"_EOF"
+# Ignore all SQLite databases
+db/*.sqlite3
+_EOF
+#+end_src
+
+*** Tracking Change
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_example
+# On branch master
+# 
+# No commits yet
+# 
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+# 	.bash_functions
+# 	.gitignore
+# 	LICENSE.md
+# 	README.md
+# 
+# nothing added to commit but untracked files present (use "git add" to track)
+#+end_example
+
+#+begin_src bash
+git add .bash_functions .gitignore README.md LICENSE.md
+#+end_src
+
+Diese Files sind nun *gestaged* und fertig zum *comitten*.
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_example
+# On branch master
+# 
+# No commits yet
+# 
+# Changes to be committed:
+#   (use "git rm --cached <file>..." to unstage)
+# 	new file:   .bash_functions
+# 	new file:   .gitignore
+# 	new file:   LICENSE.md
+# 	new file:   README.md
+# 
+#+end_example
+
+#+begin_src bash
+git commit -m 'Add first project files. Initial commit.'
+#+end_src
+
+#+begin_example
+# [master (root-commit) 1742f13] Add first project files. Initial commit.
+#  4 files changed, 8 insertions(+)
+#  create mode 100644 .bash_functions
+#  create mode 100644 .gitignore
+#  create mode 100644 LICENSE.md
+#  create mode 100644 README.md
+#+end_example
+
+*** Show the commits
+
+#+begin_src bash
+git log
+#+end_src
+
+#+begin_example
+# commit 1742f1336843ba0d51523f668b001e8cd0dcdced (HEAD -> master)
+# Author: Dr. Volker Zell <volker.zell@opitz-consulting.com>
+# Date:   Thu Dec 12 13:40:58 2019 +0100
+# 
+#     Add first project files. Initial commit.
+#+end_example
+
+*** Make some more changes
+
+#+begin_src bash
+echo "Documentation of bash function" >> README.md
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_example
+# On branch master
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git restore <file>..." to discard changes in working directory)
+# 	modified:   README.md
+# 
+# no changes added to commit (use "git add" and/or "git commit -a")
+#+end_example
+
+#+begin_src bash
+cp -v /media/stage/git.org .
+#+end_src
+
+#+begin_src bash
+git add README.md git.org
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_src bash
+git commit -m "Added documentation"
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_src bash
+git log
+#+end_src
+
+*** Branching
+
+In Git ist ein *Branch* eine Kopie aller Dateien in der jeweiligen
+Codebasis. Jeder Branch hat einen identifizierenden Namen und einen
+eigenen Versions- oder Festschreibungsverlauf (commit history). Wenn
+ein neues Repository erstellt wird, heißt der Standardbranch
+*master*. Selbst wenn keine zusätzlichen Branches erstellt werden,
+werden alle git-Befehle auf einem Branch namens master ausgeführt.
+
+Angenommen, man möchte mit einer neuen Funktionalität experimentieren,
+für diese Funktion muss jedoch eine große Menge Code in der Codebasis
+berührt werden. Man ist sich nicht sicher, ob diese Funktionalität
+funktioniert, und man möchte experimentieren, ohne dass sich dies auf
+die Hauptcodebasis auswirkt. Man kann dann einen neuen *Branch*
+erstellen, um diese Arbeit auszuführen, und alles wegwerfen, wenn es
+nicht funktioniert.
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_example
+# vzcopydirtree ()
+# {
+#  cd ${1}; tar -cf - . | (cd ${2}; tar -xf -)
+# }
+#+end_example
+
+Wir wollen die bash Function die auf *tar* basiert durch *rsync* ersetzen.
+
+#+begin_src bash
+git branch
+#+end_src
+
+#+begin_src bash
+git checkout -b rsync
+#+end_src
+
+#+begin_example
+# Switched to a new branch 'rsync'
+#+end_example
+
+#+begin_src bash
+git branch
+#+end_src
+
+Edit implementation with *rsync*
+
+#+begin_example
+rsync -hauv ${1}/ ${2}/
+#+end_example
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_src bash
+git add .bash_functions
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_src bash
+git commit -m "Changed to rsync implemenation"
+#+end_src
+
+*** Merge
+
+#+begin_src bash
+git checkout master
+#+end_src
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_example
+# vzcopydirtree ()
+# {
+#  cd ${1}; tar -cf - . | (cd ${2}; tar -xf -)
+# }
+#+end_example
+
+#+begin_src bash
+git merge rsync
+#+end_src
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_src bash
+git branch
+#+end_src
+
+#+begin_example
+# * master
+#   rsync
+#+end_example
+
+#+begin_src bash
+git branch -d rsync
+#+end_src
+
+#+begin_src bash
+git branch
+#+end_src
+
+** Creating Remote Repositories - GitHub
+*** Create GitHub account
+
+https://github.com/  ==> *Sign Up*
+
+Username: vzell-opitz
+Email:    volker.zell@opitz-consulting.com
+Password: .......
+
+
+Paste the link from the e-Mail into your browser: https://github.com/users/vzell-opitz/emails/90215553/confirm_verification/68299fcb4bdd0e7f4a49196af5bdfd6bfd762c47
+
+*** Create new remote Repository
+
+#+begin_example
+vzell-opitz/bash-functions
+#+end_example
+
+*** Push local changes to remote repo
+
+#+begin_src bash
+git remote add origin https://github.com/vzell-opitz/bash-functions.git
+#+end_src
+
+*origin* ist ein Alias Name für das Remote Repository.
+
+#+begin_src bash
+cat .git/config
+#+end_src
+
+#+begin_src bash
+git push -u origin master
+#+end_src
+
+#+begin_src bash
+cat .git/config
+#+end_src
+
+*** Edit a file and push again
+
+Add comment to bash function
+
+#+begin_src bash
+git add .bash_functions
+#+end_src
+
+#+begin_src bash
+git commit -m "Added comment"
+#+end_src
+
+#+begin_src bash
+git push
+#+end_src
+
+*** Pull changes from the remote repo
+
+Manchmal enthält der Code in dem Remote-Repository Commits, die man
+nicht im lokalen Repository hat. In diesen Situationen muss man
+Commits aus dem Remote-Repository in das lokale Repository
+hineinziehen (Pull). Es gibt vier grundlegende Szenarien, in denen man
+darauf stößt:
+
+ - Man arbeitet in einem Team und mehrere Personen haben Code in das Remote-Repository verschoben.
+ - Man hat von einem anderen Computer Änderungen auf das Remote-Repository übertragen.
+ - Das Projekt ist auf GitHub öffentlich und jemand hat dazu beigetragen.
+ - Man hat eine Datei direkt auf GitHub.com geändert.
+
+**** Change file on Github
+
+Add: " for directory synchronization" to README.md directly on Github.
+
+**** Check the remote repo for changes
+
+#+begin_src bash
+git fetch
+#+end_src
+
+**** Show changes
+
+#+begin_src bash
+git diff master origin/master
+#+end_src
+
+**** Pull changes
+
+#+begin_src bash
+git pull
+#+end_src
+
+#+begin_src bash
+cat README.md
+#+end_src
+
+** Connect to GitHub repositories using SSH
+*** Generating a new SSH key 
+
+#+begin_src bash
+ls -lt ~/.ssh
+#+end_src
+
+#+begin_src bash
+ssh-keygen -t rsa -b 4096 -C "volker.zell@opitz-consulting.com" -f ~/.ssh/github-opitz
+#+end_src
+
+#+begin_src bash
+ls -lt ~/.ssh
+#+end_src
+
+*** Add public key to Github account
+
+#+begin_src bash
+cat ~/.ssh/github-opitz.pub
+#+end_src
+
+Github->Settings->SSH and GPG keys->New SSH key
+
+Title: SSH key for vzell at Opitz
+
+*** Save key identities in ssh-agent on local machine
+
+#+begin_src bash
+ssh-add -D
+#+end_src
+
+#+begin_src bash
+ssh-add ~/.ssh/github-opitz
+#+end_src
+
+#+begin_src bash
+ssh-add ~/.ssh/github
+#+end_src
+
+#+begin_src bash
+ssh-add -l
+#+end_src
+
+*** Opitz doesn't allow direct SSH access to Github
+
+So we tunnel it via HTTPS
+
+#+begin_src bash
+cat > ~/.ssh/config <<-"_EOF"
+Host github.com
+  Hostname ssh.github.com
+  Port 443
+  User git
+  IdentityFile ~/.ssh/github-opitz
+_EOF
+#+end_src
+
+*** Change Github URL to SSH in local repo
+
+Edit .ssh/config:
+
+https://github.com/vzell-opitz/bash-functions.git
+ ==>
+git@github.com:vzell-opitz/bash-functions.git
+
+*** Test GitHub connections
+
+#+begin_src bash
+ssh -T github.com
+#+end_src
+
+#+begin_src bash
+ssh -T github.com-private
+#+end_src
+
+*** Make a change and push to remote repo (no more prompting for authentication)
+
+Add some text to README.md
+
+"Added SSH configuration"
+
+#+begin_src bash
+git add README.md
+#+end_src
+
+#+begin_src bash
+git commit -m "Added some more documentation"
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_src bash
+git push
+#+end_src
+
+** Collaborating on Github
+*** Login as vzell 
+
+Als user vzell habe ich von dem bash-functions Project des Users
+vzell-opitz gehört und möchte dazu beisteuern.
+
+ - Bug Fixes
+ - Neue Funktionalität
+
+https://github.com/vzell-opitz/bash-functions
+
+*** Github collaboration workflow
+
+New User (*vzell*):
+ - Fork repo from other user
+ - Clone repo to local machine
+ - Create local feature branch
+ - Push changes to own repo on Github
+ - Create Pull request
+
+Other User (*vzell-opitz*):
+ - Either merge changes to own repo or reject changes
+
+*** Fork the repo on Github as user *vzell*
+
+Dafür den Browser auf dem Laptop hernehmen (einloggen als *vzell*)
+
+*** Setup Git and SSH for second user on the same host
+
+#+begin_src bash
+mkdir -p ~/private
+#+end_src
+
+#+begin_src bash
+cat >> ~/.gitconfig <<-"_EOF"
+
+[includeIf "gitdir:~/private/"]
+    path = ~/private/.gitconfig
+_EOF
+#+end_src
+
+#+begin_src bash
+cat > ~/private/.gitconfig <<-"_EOF"
+[user]
+    email = vzell@volkerzell.de
+_EOF
+#+end_src
+
+#+begin_src bash
+cat >> ~/.ssh/config <<-"_EOF"
+
+Host github.com-private
+  Hostname ssh.github.com
+  Port 443
+  User git
+  IdentityFile ~/.ssh/github
+_EOF
+#+end_src
+
+*** Clone the repo as user vzell
+
+#+begin_src bash
+cd ~/private
+#+end_src
+
+Copy the SSH based Github URL from the fork.
+
+Change hostname part of URL to "github.com-private"
+
+#+begin_src bash
+git clone git@github.com-private:vzell/bash-functions.git
+#+end_src
+
+#+begin_src bash
+cd ~/private/bash-functions
+#+end_src
+
+#+begin_src bash
+cat .git/config
+#+end_src
+
+#+begin_src bash
+git status
+#+end_src
+
+*** Create feature branch
+
+#+begin_src bash
+git checkout -b new-feature
+#+end_src
+
+#+begin_src bash
+git branch -av
+#+end_src
+
+Edit .bash_functions and add "--progress" to rsync implementation
+
+#+begin_src bash
+git add .bash_functions
+#+end_src
+
+#+begin_src bash
+git commit -m "Added --progress option"
+#+end_src
+
+#+begin_src bash
+git log
+#+end_src
+
+#+begin_src bash
+git push --set-upstream origin new-feature
+#+end_src
+
+#+begin_src bash
+cat ~/private/bash-functions/.git/config
+#+end_src
+
+#+begin_src bash
+git branch -va
+#+end_src
+
+*** Create pull request as user vzell
+
+https://github.com/vzell/bash-functions/pull/new/new-feature
+
+Please merge my suppi duppi new feature
+
+*** Check mail and pull request as user vzell-opitz
+
+*** Merge Pull request via Github
+
+*** Commandline
+**** Step 1: From your project repository, check out a new branch and test the changes.
+
+#+begin_src bash
+git checkout -b vzell-new-feature master
+git pull git://github.com/vzell/bash-functions.git new-feature
+#+end_src
+
+**** Step 2: Merge the changes and update on GitHub.
+
+#+begin_src bash
+git checkout master
+git merge --no-ff vzell-new-feature
+git push origin master
+#+end_src
+
+*** As user vzell
+
+ - Delete branch on Github
+ - Delete fork on Github
+
+#+begin_src bash
+git branch
+#+end_src
+
+*** As user vzell-opitz
+
+#+begin_src bash
+cd ~/opitz/bash-functions
+#+end_src
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_src bash
+git pull
+#+end_src
+
+#+begin_src bash
+cat .bash_functions
+#+end_src
+
+#+begin_src bash
+git log
+#+end_src
+
+
+* Magit - forge
+** Create issue
+
+Dired: ~/opitz/bash-functions
+
+C-x g
+
+M-x: forge-pull
+Github user: vzell
+
+Show old pull request
+
+': c i
+Please add more functions
+
+e.g. for memory usage
+
+Put cursor on issue: 
+<Return>
+C-c C-w
+
+** Github workflow with Magit and forge
+
+M-x: magit-clone
+u: vzell-opitz/bash-functions
+~/private/vz-bash-functions
+n (push-default)
+
+b c: master->new-feature-branch
+
+Edit a file, (g), stage (s) and then commit (c c)
+
+M-x: forge-fork
+vzell (User)
+vzell (remote)
+y     (push-default)
+
+P p (error, because of multiple accounts on same host)
+Workaround: M C vzell u -> add "-private" to hostname in Git-URL
+
+P p
+
+M C vzell u -> remove "-private" to hostname in Git-URL
+
+': c p
+<Return>
+<Return>
+
+
+* Bitbucket (Opitz)
+** Create an account
+
+https://git.opitz-consulting.de/users/vze/
+
+** Generating a new SSH key 
+
+#+begin_src bash
+ssh-keygen -t rsa -b 4096 -C "volker.zell@opitz-consulting.com" -f ~/.ssh/bitbucket-oc
+#+end_src
+
+#+begin_example
+# Generating public/private rsa key pair.
+# Enter passphrase (empty for no passphrase): 
+# Enter same passphrase again: 
+# Your identification has been saved in /home/VZE/.ssh/bitbucket-oc.
+# Your public key has been saved in /home/VZE/.ssh/bitbucket-oc.pub.
+# The key fingerprint is:
+# SHA256:RZzgw9Cmijr0/iX7fe70hALGDYGUKZcwtNGU2jGdadg volker.zell@opitz-consulting.com
+# The key's randomart image is:
+# +---[RSA 4096]----+
+# |  .==o@o+o..     |
+# |   .+% E+.o      |
+# |   .= +++ .      |
+# |   . .o oo       |
+# |   . . +S.       |
+# | .. . . .   .    |
+# |...  . . . o .   |
+# |o  .  + . o.o    |
+# | ....o.. .+o .   |
+# +----[SHA256]-----+
+#+end_example
+
+** Adding your SSH key to the ssh-agent
+
+#+begin_src bash
+eval $(ssh-agent -s)
+#+end_src
+
+#+begin_example
+# Agent pid 18452
+#+end_example
+
+#+begin_src bash
+ssh-add ~/.ssh/bitbucket-oc
+#+end_src
+
+#+begin_example
+# Identity added: /home/VZE/.ssh/bitbucket-oc (/home/VZE/.ssh/bitbucket-oc)
+#+end_example
+
+** Create a repository
+
+https://git.opitz-consulting.de/users/vze/repos?create
+
+or click on *Create Repository*
+
+** Testing your SSH connection
+
+Click on a repository and select *Clone*, you should see ssh in the pulldown menu.
+
+** Working with your repository
+*** My code is ready to be pushed
+
+#+begin_src bash
+cd ~/org/opitz
+#+end_src
+
+#+begin_src bash
+git init
+#+end_src
+
+#+begin_example
+# Initialized empty Git repository in /home/VZE/org/opitz/.git/
+#+end_example
+
+#+begin_src bash
+git add *.sh doc-git.org setup styles
+#+end_src
+
+#+begin_src bash
+git commit -m "Initial Commit"
+#+end_src
+
+#+begin_example
+# [master (root-commit) 99057df] Initial Commit
+#  35 files changed, 11456 insertions(+)
+#  create mode 100644 SOA-Start-Stop.sh
+#  create mode 100644 doc-git.org
+#  create mode 100755 setup/theme-bigblow-local.setup
+#  create mode 100755 setup/theme-bigblow.setup
+#  create mode 100755 setup/theme-readtheorg-local.setup
+#  create mode 100755 setup/theme-readtheorg.setup
+#  create mode 100644 soaStartup.sh
+#  create mode 100755 styles/bigblow/css/bigblow.css
+#  create mode 100755 styles/bigblow/css/hideshow.css
+#  create mode 100755 styles/bigblow/css/htmlize.css
+#  create mode 100755 styles/bigblow/images/checked.png
+#  create mode 100755 styles/bigblow/images/fixme.png
+#  create mode 100755 styles/bigblow/images/halfchecked.png
+#  create mode 100755 styles/bigblow/images/info.png
+#  create mode 100755 styles/bigblow/images/note.png
+#  create mode 100755 styles/bigblow/images/tip.png
+#  create mode 100755 styles/bigblow/images/unchecked.png
+#  create mode 100755 styles/bigblow/images/warning.png
+#  create mode 100755 styles/bigblow/js/ZeroClipboard.swf
+#  create mode 100755 styles/bigblow/js/bigblow.js
+#  create mode 100755 styles/bigblow/js/hideshow.js
+#  create mode 100755 styles/bigblow/js/jquery-1.11.0.min.js
+#  create mode 100755 styles/bigblow/js/jquery-1.9.1.min.js
+#  create mode 100755 styles/bigblow/js/jquery-ui-1.10.2.min.js
+#  create mode 100755 styles/bigblow/js/jquery.localscroll-min.js
+#  create mode 100755 styles/bigblow/js/jquery.scrollTo-1.4.3.1-min.js
+#  create mode 100755 styles/bigblow/js/jquery.zclip.min.js
+#  create mode 100755 styles/lib/js/jquery.stickytableheaders.min.js
+#  create mode 100755 styles/lib/js/stickytableheaders-license.txt
+#  create mode 100755 styles/readtheorg/css/htmlize.css
+#  create mode 100755 styles/readtheorg/css/readtheorg.css
+#  create mode 100755 styles/readtheorg/css/rtd-full.css
+#  create mode 100755 styles/readtheorg/js/readtheorg.js
+#  create mode 100755 styles/readtheorg/readtheorg.org
+#  create mode 100644 webtier.sh
+#+end_example
+
+#+begin_src bash
+git remote add origin https://git.opitz-consulting.de/scm/~vze/vztest.git
+#+end_src
+
+#+begin_src bash
+git remote show origin
+#+end_src
+
+#+begin_example
+# * remote origin
+#   Fetch URL: https://git.opitz-consulting.de/scm/~vze/vztest.git
+#   Push  URL: https://git.opitz-consulting.de/scm/~vze/vztest.git
+#   HEAD branch: (unknown)
+#+end_example
+
+#+begin_src bash
+git push -u origin master
+#+end_src
+
+#+begin_example
+# Username for 'https://git.opitz-consulting.de': vze
+# 
+# Counting objects: 48, done.
+# Delta compression using up to 8 threads.
+# Compressing objects: 100% (46/46), done.
+# Writing objects: 100% (48/48), 206.65 KiB | 5.04 MiB/s, done.
+# Total 48 (delta 10), reused 0 (delta 0)
+# To https://git.opitz-consulting.de/scm/~vze/vztest.git
+#  * [new branch]      master -> master
+# Branch 'master' set up to track remote branch 'master' from 'origin'.
+#+end_example
+
+#+begin_src bash
+git add doc-git.org doc-git.html README.md
+#+end_src
+
+#+begin_src bash
+git commit -m "Added git html documentation and README.md"
+#+end_src
+
+#+begin_example
+# [master 947eb1f] Added git html documentation and README.md
+#  3 files changed, 5902 insertions(+), 12 deletions(-)
+#  create mode 100644 README.md
+#  create mode 100644 doc-git.html
+#+end_example
+
+#+begin_src bash
+git push -u origin master
+#+end_src
+
+#+begin_example
+# Counting objects: 5, done.
+# Delta compression using up to 8 threads.
+# Compressing objects: 100% (5/5), done.
+# Writing objects: 100% (5/5), 27.64 KiB | 3.95 MiB/s, done.
+# Total 5 (delta 2), reused 0 (delta 0)
+# To https://git.opitz-consulting.de/scm/~vze/vztest.git
+#    99057df..947eb1f  master -> master
+# Branch 'master' set up to track remote branch 'master' from 'origin'.
+#+end_example
+** You have an empty repository
+
+To get started you will need to run these commands in your terminal.
+
+New to Git? Learn the basic Git commands
+Configure Git for the first time
+
+git config --global user.name "Zell, Volker"
+git config --global user.email "Volker.Zell@opitz-consulting.com"
+
+Working with your repository
+I just want to clone this repository
+
+If you want to simply clone this empty repository then run this command in your terminal.
+
+git clone ssh://git@git.opitz-consulting.de:7999/~vze/wls-course.git
+
+My code is ready to be pushed
+
+If you already have code ready to be pushed to this repository then run this in your terminal.
+
+cd existing-project
+git init
+git add --all
+git commit -m "Initial Commit"
+git remote add origin ssh://git@git.opitz-consulting.de:7999/~vze/wls-course.git
+git push -u origin master
+
+My code is already tracked by Git
+
+If your code is already tracked by Git then set this repository as your "origin" to push to.
+
+cd existing-project
+git remote set-url origin ssh://git@git.opitz-consulting.de:7999/~vze/wls-course.git
+git push -u origin --all
+git push origin --tags
+
+
+
+
