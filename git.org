@@ -783,21 +783,6 @@ git@github.com:vzell-opitz/bash-functions.git
 ssh -T github.com
 #+end_src
 
-#+begin_src bash
-cat > ~/.ssh/config <<-"_EOF"
-
-Host github.com-private
-  Hostname ssh.github.com
-  Port 443
-  User git
-  IdentityFile ~/.ssh/github
-_EOF
-#+end_src
-
-#+begin_src bash
-ssh -T github.com-private
-#+end_src
-
 *** Make a change and push to remote repo (no more prompting for authentication)
 
 Add some text to README.md
