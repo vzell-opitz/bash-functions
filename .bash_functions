@@ -1,4 +1,4 @@
 vzcopydirtree ()
 {
- cd ${1}; tar -cf - . | (cd ${2}; tar -xf -)
+ rsync -hauv ${1}/ ${2}/
 }
