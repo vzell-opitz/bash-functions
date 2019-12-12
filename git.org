@@ -237,6 +237,28 @@ git status
 cp -v /media/stage/git.org .
 #+end_src
 
+#+begin_example
+# ‘/media/stage/git.org’ -> ‘./git.org’
+#+end_example
+
+#+begin_src bash
+git status
+#+end_src
+
+#+begin_example
+# On branch master
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git restore <file>..." to discard changes in working directory)
+# 	modified:   README.md
+# 
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+# 	git.org
+# 
+# no changes added to commit (use "git add" and/or "git commit -a")
+#+end_example
+
 #+begin_src bash
 git add README.md git.org
 #+end_src
@@ -245,17 +267,51 @@ git add README.md git.org
 git status
 #+end_src
 
+#+begin_example
+# On branch master
+# Changes to be committed:
+#   (use "git restore --staged <file>..." to unstage)
+# 	modified:   README.md
+# 	new file:   git.org
+# 
+#+end_example
+
 #+begin_src bash
 git commit -m "Added documentation"
 #+end_src
+
+#+begin_example
+# [master 1f39bfa] Added documentation
+#  2 files changed, 1017 insertions(+)
+#  create mode 100755 git.org
+#+end_example
 
 #+begin_src bash
 git status
 #+end_src
 
+#+begin_example
+# On branch master
+# nothing to commit, working tree clean
+#+end_example
+
 #+begin_src bash
 git log
 #+end_src
+
+#+begin_example
+# commit 1f39bfa7f041054a489b1846e7767b602a0dfbb5 (HEAD -> master)
+# Author: Dr. Volker Zell <volker.zell@opitz-consulting.com>
+# Date:   Thu Dec 12 13:43:24 2019 +0100
+# 
+#     Added documentation
+# 
+# commit 1742f1336843ba0d51523f668b001e8cd0dcdced
+# Author: Dr. Volker Zell <volker.zell@opitz-consulting.com>
+# Date:   Thu Dec 12 13:40:58 2019 +0100
+# 
+#     Add first project files. Initial commit.
+#+end_example
 
 *** Branching
 
@@ -291,6 +347,10 @@ Wir wollen die bash Function die auf *tar* basiert durch *rsync* ersetzen.
 git branch
 #+end_src
 
+#+begin_example
+# * master
+#+end_example
+
 #+begin_src bash
 git checkout -b rsync
 #+end_src
@@ -303,6 +363,11 @@ git checkout -b rsync
 git branch
 #+end_src
 
+#+begin_example
+#   master
+# * rsync
+#+end_example
+
 Edit implementation with *rsync*
 
 #+begin_example
@@ -313,9 +378,26 @@ rsync -hauv ${1}/ ${2}/
 cat .bash_functions
 #+end_src
 
+#+begin_example
+# vzcopydirtree ()
+# {
+#  rsync -hauv ${1}/ ${2}/
+# }
+#+end_example
+
 #+begin_src bash
 git status
 #+end_src
+
+#+begin_example
+# On branch rsync
+# Changes not staged for commit:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git restore <file>..." to discard changes in working directory)
+# 	modified:   .bash_functions
+# 
+# no changes added to commit (use "git add" and/or "git commit -a")
+#+end_example
 
 #+begin_src bash
 git add .bash_functions
@@ -325,15 +407,32 @@ git add .bash_functions
 git status
 #+end_src
 
+#+begin_example
+# On branch rsync
+# Changes to be committed:
+#   (use "git restore --staged <file>..." to unstage)
+# 	modified:   .bash_functions
+# 
+#+end_example
+
 #+begin_src bash
 git commit -m "Changed to rsync implemenation"
 #+end_src
+
+#+begin_example
+# [rsync d9ef3f4] Changed to rsync implemenation
+#  1 file changed, 1 insertion(+), 1 deletion(-)
+#+end_example
 
 *** Merge
 
 #+begin_src bash
 git checkout master
 #+end_src
+
+#+begin_example
+# Switched to branch 'master'
+#+end_example
 
 #+begin_src bash
 cat .bash_functions
@@ -347,12 +446,35 @@ cat .bash_functions
 #+end_example
 
 #+begin_src bash
+git branch
+#+end_src
+
+#+begin_example
+# * master
+#   rsync
+#+end_example
+
+#+begin_src bash
 git merge rsync
 #+end_src
+
+#+begin_example
+# Updating 1f39bfa..d9ef3f4
+# Fast-forward
+#  .bash_functions | 2 +-
+#  1 file changed, 1 insertion(+), 1 deletion(-)
+#+end_example
 
 #+begin_src bash
 cat .bash_functions
 #+end_src
+
+#+begin_example
+# vzcopydirtree ()
+# {
+#  rsync -hauv ${1}/ ${2}/
+# }
+#+end_example
 
 #+begin_src bash
 git branch
@@ -367,9 +489,17 @@ git branch
 git branch -d rsync
 #+end_src
 
+#+begin_example
+# Deleted branch rsync (was d9ef3f4).
+#+end_example
+
 #+begin_src bash
 git branch
 #+end_src
+
+#+begin_example
+# * master
+#+end_example
 
 ** Creating Remote Repositories - GitHub
 *** Create GitHub account
@@ -382,6 +512,8 @@ Password: .......
 
 
 Paste the link from the e-Mail into your browser: https://github.com/users/vzell-opitz/emails/90215553/confirm_verification/68299fcb4bdd0e7f4a49196af5bdfd6bfd762c47
+
+https://github.com/users/vzell-opitz/emails/90308782/confirm_verification/be670248326f5d324061252e26d82f4b7cc73831?utm_campaign=github-email-verification&utm_content=html&utm_medium=email&utm_source=verification-email
 
 *** Create new remote Repository
 
@@ -405,9 +537,38 @@ cat .git/config
 git push -u origin master
 #+end_src
 
+#+begin_example
+# Username for 'https://github.com': vzell-opitz
+# Password for 'https://vzell-opitz@github.com': 
+# Enumerating objects: 13, done.
+# Counting objects: 100% (13/13), done.
+# Delta compression using up to 2 threads
+# Compressing objects: 100% (8/8), done.
+# Writing objects: 100% (13/13), 7.44 KiB | 1.49 MiB/s, done.
+# Total 13 (delta 2), reused 0 (delta 0)
+# remote: Resolving deltas: 100% (2/2), done.        
+# To https://github.com/vzell-opitz/bash-functions.git
+#  * [new branch]      master -> master
+# Branch 'master' set up to track remote branch 'master' from 'origin'.
+#+end_example
+
 #+begin_src bash
 cat .git/config
 #+end_src
+
+#+begin_example
+# [core]
+# 	repositoryformatversion = 0
+# 	filemode = true
+# 	bare = false
+# 	logallrefupdates = true
+# [remote "origin"]
+# 	url = https://github.com/vzell-opitz/bash-functions.git
+# 	fetch = +refs/heads/*:refs/remotes/origin/*
+# [branch "master"]
+# 	remote = origin
+# 	merge = refs/heads/master
+#+end_example
 
 *** Edit a file and push again
 
@@ -421,9 +582,28 @@ git add .bash_functions
 git commit -m "Added comment"
 #+end_src
 
+#+begin_example
+# [master e35c454] Added comment
+#  1 file changed, 1 insertion(+)
+#+end_example
+
 #+begin_src bash
 git push
 #+end_src
+
+#+begin_example
+# Username for 'https://github.com': vzell-opitz
+# Password for 'https://vzell-opitz@github.com': 
+# Enumerating objects: 5, done.
+# Counting objects: 100% (5/5), done.
+# Delta compression using up to 2 threads
+# Compressing objects: 100% (3/3), done.
+# Writing objects: 100% (3/3), 337 bytes | 337.00 KiB/s, done.
+# Total 3 (delta 1), reused 0 (delta 0)
+# remote: Resolving deltas: 100% (1/1), completed with 1 local object.        
+# To https://github.com/vzell-opitz/bash-functions.git
+#    d9ef3f4..e35c454  master -> master
+#+end_example
 
 *** Pull changes from the remote repo
 
@@ -448,17 +628,46 @@ Add: " for directory synchronization" to README.md directly on Github.
 git fetch
 #+end_src
 
+#+begin_example
+# remote: Enumerating objects: 5, done.        
+# remote: Counting objects: 100% (5/5), done.        
+# remote: Compressing objects: 100% (3/3), done.        
+# remote: Total 3 (delta 1), reused 0 (delta 0), pack-reused 0        
+# Unpacking objects: 100% (3/3), done.
+# From https://github.com/vzell-opitz/bash-functions
+#    e35c454..03e5218  master     -> origin/master
+#+end_example
+
 **** Show changes
 
 #+begin_src bash
 git diff master origin/master
 #+end_src
 
+#+begin_example
+# diff --git a/README.md b/README.md
+# index 5492b3f..0b2cab6 100644
+# --- a/README.md
+# +++ b/README.md
+# @@ -1,2 +1,4 @@
+#  # README #
+#  Documentation of bash function
+# +
+# +added new comment
+#+end_example
+
 **** Pull changes
 
 #+begin_src bash
 git pull
 #+end_src
+
+#+begin_example
+# Updating e35c454..03e5218
+# Fast-forward
+#  README.md | 2 ++
+#  1 file changed, 2 insertions(+)
+#+end_example
 
 #+begin_src bash
 cat README.md
@@ -475,6 +684,28 @@ ls -lt ~/.ssh
 ssh-keygen -t rsa -b 4096 -C "volker.zell@opitz-consulting.com" -f ~/.ssh/github-opitz
 #+end_src
 
+#+begin_example
+# Generating public/private rsa key pair.
+# Enter passphrase (empty for no passphrase): 
+# Enter same passphrase again: 
+# Your identification has been saved in /home/oracle/.ssh/github-opitz.
+# Your public key has been saved in /home/oracle/.ssh/github-opitz.pub.
+# The key fingerprint is:
+# SHA256:dkQfeMh7FKCQiG+ZpODr9elrpzIEf4cQ5WHyYVdJ2Kc volker.zell@opitz-consulting.com
+# The key's randomart image is:
+# +---[RSA 4096]----+
+# |   o.B.o=+++o.   |
+# |. ..O =o =+oo.   |
+# |.. +.=  . ++.    |
+# | o..=    E. .    |
+# |  +.. . S ..     |
+# | . + o o .       |
+# |. o o o          |
+# | . o + .         |
+# |    =++          |
+# +----[SHA256]-----+
+#+end_example
+
 #+begin_src bash
 ls -lt ~/.ssh
 #+end_src
@@ -484,6 +715,10 @@ ls -lt ~/.ssh
 #+begin_src bash
 cat ~/.ssh/github-opitz.pub
 #+end_src
+
+#+begin_example
+# ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAKmbDwvgtmNutYI5CxvR5qIRthynvs00yr00lIHNk3RGDzI9LBA49G7Y9l5TjvMYRIP1UYnCy+9XT6iV2y+NYPxLXaP1hKupKQIhgKim0XK+Hq9POmuEfxMFwV67vNEM+C/irzocqcQSC+h0DZld5lQDTOys5HxjFpOQk0y81R3WXWwx8I3U6QQAVYro916O/9XfEsHB4DrxNbUK4XEj3hrAp4rkmsdUlaQ1hUX++3kvEHPrIQMLDVgFkAwynTLvrXCytC5hmnS5EapExl5Zk9GZEwYq6o9JpCf0TzZU2D1YFb9/bI9sIlM5d8J1xhwlxm8sR00gjsFBCuZvf9FBMPuBv3W39kwpAaAw6V9nKiU76XnU0n+WehCoTdvPbDP8cMoxLyMSHFz/T1Ho43ICV3GAl5hl+vCcHLFt409t5iRlOFB5TikJCsOSHYrNKKCM2SFfAvODyzXrMxl3dSTcguvIYEmTbUFviejbsTEI53l900uGZZkT1+qTSAyT8sW1dPKYovfMo51L06g0Wz0qYwKW7+FTUa4Z0pTD90/p5pOVCxkcqrCUHTJpnyd9q+3og7wdiP3/+hBxTakmOKRC8HmVl8qf4LYHZFn7TFpSU5V3/0p0Htlg4iAaxLZzYI8gF598bdgD5oufVGusQo/i8fcxC4TlTqpXCghX0e6hajQ== volker.zell@opitz-consulting.com
+#+end_example
 
 Github->Settings->SSH and GPG keys->New SSH key
 
@@ -499,13 +734,26 @@ ssh-add -D
 ssh-add ~/.ssh/github-opitz
 #+end_src
 
+#+begin_example
+# Identity added: /home/oracle/.ssh/github-opitz (/home/oracle/.ssh/github-opitz)
+#+end_example
+
 #+begin_src bash
 ssh-add ~/.ssh/github
 #+end_src
 
+#+begin_example
+# Enter passphrase for /home/oracle/.ssh/github: 
+# Identity added: /home/oracle/.ssh/github (/home/oracle/.ssh/github)
+#+end_example
+
 #+begin_src bash
 ssh-add -l
 #+end_src
+
+#+begin_example
+# 4096 SHA256:dkQfeMh7FKCQiG+ZpODr9elrpzIEf4cQ5WHyYVdJ2Kc /home/oracle/.ssh/github-opitz (RSA)
+#+end_example
 
 *** Opitz doesn't allow direct SSH access to Github
 
@@ -523,7 +771,7 @@ _EOF
 
 *** Change Github URL to SSH in local repo
 
-Edit .ssh/config:
+Edit .git/config:
 
 https://github.com/vzell-opitz/bash-functions.git
  ==>
@@ -533,6 +781,17 @@ git@github.com:vzell-opitz/bash-functions.git
 
 #+begin_src bash
 ssh -T github.com
+#+end_src
+
+#+begin_src bash
+cat > ~/.ssh/config <<-"_EOF"
+
+Host github.com-private
+  Hostname ssh.github.com
+  Port 443
+  User git
+  IdentityFile ~/.ssh/github
+_EOF
 #+end_src
 
 #+begin_src bash
@@ -557,9 +816,29 @@ git commit -m "Added some more documentation"
 git status
 #+end_src
 
+#+begin_example
+# On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#   (use "git push" to publish your local commits)
+# 
+# nothing to commit, working tree clean
+#+end_example
+
 #+begin_src bash
 git push
 #+end_src
+
+#+begin_example
+# Enumerating objects: 5, done.
+# Counting objects: 100% (5/5), done.
+# Delta compression using up to 2 threads
+# Compressing objects: 100% (3/3), done.
+# Writing objects: 100% (3/3), 366 bytes | 366.00 KiB/s, done.
+# Total 3 (delta 1), reused 0 (delta 0)
+# remote: Resolving deltas: 100% (1/1), completed with 1 local object.        
+# To github.com:vzell-opitz/bash-functions.git
+#    03e5218..d0b801f  master -> master
+#+end_example
 
 ** Collaborating on Github
 *** Login as vzell 
@@ -740,7 +1019,7 @@ git log
 #+end_src
 
 
-* Magit - forge
+* Magit - Forge
 ** Create issue
 
 Dired: ~/opitz/bash-functions
